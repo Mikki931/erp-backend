@@ -97,14 +97,22 @@ app.use("/product", routerProduct);
 app.use("/purchaseOrder", routerPurchaseOrder);
 app.use("/salesOrder", routerSalesOrder);
 
-mongoose
-  .connect(process.env.mongourl)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.log("Error connecting to MongoDB:", err);
-  });
+const mongoUri = process.env.mongourl;
+
+if (!mongoUri) {
+  console.warn(
+    "Environment variable 'mongourl' is not set. Skipping MongoDB connection.",
+  );
+} else {
+  mongoose
+    .connect(mongoUri)
+    .then(() => {
+      console.log("Connected to MongoDB");
+    })
+    .catch((err) => {
+      console.log("Error connecting to MongoDB:", err);
+    });
+}
 
 const PORT = process.env.PORT || 3001;
 
