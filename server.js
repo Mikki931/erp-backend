@@ -22,7 +22,17 @@ const app = express();
 
 require("dotenv").config();
 
-app.use(cors());
+const corsOptions = {
+  origin: [
+    "https://erp-frontend-mu-opal.vercel.app",
+    "http://localhost:3000",
+  ],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -96,6 +106,14 @@ mongoose
     console.log("Error connecting to MongoDB:", err);
   });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
-});
+const PORT = process.env.PORT || 3001;
+
+// Vercel runs this file as a Serverless Function.
+// Only start a server when running locally (e.g. `npm run dev`).
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
